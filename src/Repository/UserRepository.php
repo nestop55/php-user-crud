@@ -8,6 +8,14 @@ use PDO;
 
 class UserRepository
 {
+
+    public function searchUsers(string $search) : array {
+        $pdo = Connector::connect();
+        $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ? or name like ? or email like ?  ORDER BY id ASC');
+        $stmt->execute([$search, "%$search%", "%$search%"]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function findAll(): array
     {
         $pdo = Connector::connect();

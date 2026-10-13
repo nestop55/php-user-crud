@@ -11,36 +11,79 @@ use App\Repository\UserRepository;
 $controller = new UserController(new UserRepository());
 $action = $_GET['action'] ?? 'list';
 
-if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller->createUser([
-        'name' => $_POST['name'] ?? '',
-        'email' => $_POST['email'] ?? '',
-    ]);
-    $action = 'list';
-}
+switch ($action) {
 
-if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller->updateUser(
-        (int) ($_POST['id'] ?? 0),
-        [
-            'name' => $_POST['name'] ?? '',
-            'email' => $_POST['email'] ?? '',
-        ]
-    );
-    $action = 'list';
-}
+    case 'search':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit;
+        }
 
-if ($action === 'delete' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-    $controller->deleteUser((int) ($_GET['id'] ?? 0));
-    $action = 'list';
-}
+        $users = $controller->searchUsers([
+                'search' => $_POST['search'] ?? '',
+        ]);
+        require __DIR__ . '/View/users.php';
+        exit;
 
-if ($action === 'edit' && isset($_GET['id'])) {
-    $user = $controller->showUser((int) $_GET['id']);
-    require __DIR__ . '/View/editUsers.php';
-    exit;
-}
+    case 'create':
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            require __DIR__ . '/View/createUsers.php';
+            exit;
+        }
 
-$users = $controller->listUsers();
-require __DIR__ . '/View/users.php';
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit;
+        }
 
+        $controller->createUser([
+                'name' => $_POST['name'] ?? '',
+                'email' => $_POST['email'] ?? '',
+        ]);
+
+        header('Location: index.php');
+        exit;
+
+    case 'update':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit;
+        }
+
+        $controller->updateUser(
+            (int) ($_POST['id'] ?? 0),
+            [
+                'name' => $_POST['name'] ?? '',
+                'email' => $_POST['email'] ?? '',
+            ]
+        );
+        header('Location: index.php');
+        exit;
+    
+    case 'edit':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(400);
+            exit;
+        }
+        
+        $user = $controller->showUser((int) $_POST['id']);
+        require __DIR__ . '/View/editUsers.php';
+        exit;
+
+    case 'delete':
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit;
+        }
+        $controller->deleteUser((int) ($_POST['id'] ?? 0));
+        header('Location: index.php');   
+        exit;
+    
+    case 'list':
+        $users = $controller->listUsers();
+        require __DIR__ . '/View/users.php';
+        exit;
+        
+    default:
+        header('Location: index.php');
+}   

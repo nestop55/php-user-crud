@@ -1,14 +1,5 @@
 <?php
-require_once __DIR__ . '/../Database/Connector.php';
-require_once __DIR__ . '/../Model/User.php';
-require_once __DIR__ . '/../Repository/UserRepository.php';
-require_once __DIR__ . '/../Controller/UserController.php';
-
-use App\Controller\UserController;
-use App\Repository\UserRepository;
-
-$controller = new UserController(new UserRepository());
-$user = $controller->showUser((int) ($_GET['id'] ?? 0));
+/** @var array|null $user */
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -16,7 +7,9 @@ $user = $controller->showUser((int) ($_GET['id'] ?? 0));
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit</title>
-    <link rel="stylesheet" href="View/css/style.css">
+    <link rel="stylesheet" href="View/css/style.css?v=<?= filemtime(__DIR__ . '/css/style.css'); ?>">
+</head>
+
 </head>
 <body>
     <h1>Editar usuario</h1>
@@ -28,7 +21,8 @@ $user = $controller->showUser((int) ($_GET['id'] ?? 0));
             <input type="hidden" name="id" value="<?= htmlspecialchars((string) $user['id']); ?>">
             <input type="text" name="name" placeholder="Nombre" value="<?= htmlspecialchars($user['name']); ?>" required>
             <input type="email" name="email" placeholder="Email" value="<?= htmlspecialchars($user['email']); ?>" required>
-            <button type="submit">Guardar</button>
+            <button class="createButton" type="submit">Guardar</button>
+            <a class="cancelAnchor" href="index.php">Cancelar</a>
         </form>
     <?php endif; ?>
 </body>

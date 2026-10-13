@@ -6,16 +6,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuarios</title>
-    <link rel="stylesheet" href="View/css/style.css">
+    <title>List</title>
+    <link rel="stylesheet" href="View/css/style.css?v=<?= filemtime(__DIR__ . '/css/style.css'); ?>">
 </head>
 <body>
     <h1>Usuarios</h1>
 
-    <form method="post" action="index.php?action=create">
-        <input type="text" name="name" placeholder="Nombre" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <button type="submit">Guardar</button>
+    <form method="post" action="index.php?action=search">
+        <input type="text" name="search" placeholder="Buscar">
+        <button type="submit">Buscar</button>
+        <a class="createAnchor" href="index.php?action=create">Nuevo Usuario</a>
     </form>
 
     <table>
@@ -24,7 +24,6 @@
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Email</th>
-                <th></th>
                 <th></th>
             </tr>
         </thead>
@@ -39,8 +38,16 @@
                         <td><?= htmlspecialchars((string) $user['id']); ?></td>
                         <td><?= htmlspecialchars($user['name']); ?></td>
                         <td><?= htmlspecialchars($user['email']); ?></td>
-                        <td><a href="index.php?action=edit&id=<?= (int) $user['id']; ?>">Edit</a></td>
-                        <td><a href="index.php?action=delete&id=<?= (int) $user['id']; ?>">Delete</a></td>
+                        <td>
+                            <form method="post" action="index.php?action=edit">
+                                <input type="hidden" name="id" value="<?= (int) $user['id']; ?>">
+                                <button class="editButton" type="submit">EDIT</button>
+                            </form>
+                                                                                   <form method="post" action="index.php?action=delete">
+                                <input type="hidden" name="id" value="<?= (int) $user['id']; ?>">
+                                <button class="deleteButton" type="submit">DELETE</button>
+                            </form>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>

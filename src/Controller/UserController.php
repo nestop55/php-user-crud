@@ -15,6 +15,12 @@ class UserController
         $this->repository = $repository;
     }
 
+    public function searchUsers(array $data): array 
+    {
+        $search = trim($data['search'] ?? '');
+        return $this->repository->searchUsers($search);
+    }
+
     public function listUsers(): array
     {
         return $this->repository->findAll();
